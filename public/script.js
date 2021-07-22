@@ -13,6 +13,13 @@ var peer = new Peer(undefined, {
 });
 
 
+peer.on('open', function(id){
+  console.log('hey');
+}
+);
+
+
+
 navigator.mediaDevices
 .getUserMedia({
     video: true,
@@ -35,10 +42,6 @@ const connectToNewUser = (userId) => {
 };
 
 
-peer.on('open', function(id){
-    console.log('hey');
-}
-);
 
 
 
