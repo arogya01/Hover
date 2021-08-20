@@ -6,44 +6,43 @@ myVideo.muted = true;
 
 const videoGrid = document.getElementById("video-grid");
 
-var peer = new Peer(undefined, {
-  path: "/peerjs",
-  host: "/",
-  port: "3030",
+var peer = new Peer();
+
+peer.on("open", (id) => {
+  socket.emit("join-room", ROOM_ID, id);
 });
 
-
-peer.on('open', function(id){
-  console.log('hey');
-}
-);
-
-
-
 navigator.mediaDevices
-.getUserMedia({
+  .getUserMedia({
     video: true,
     audio: true,
   })
   .then((stream) => {
     myVideoStream = stream;
     addVideoStream(myVideo, stream);
+
+    peer.on("call", function (call) {
+      call.answer(stream);
+      const video = document.createElement("video");
+      console.log("log1");
+      call.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream);
+      });
+    });
+
+    socket.on("user-connected", (userId) => {
+      connectToNewUser(userId, stream);
+    });
   });
 
-// socket.emit('join-room',ROOM_ID);
-
-socket.on("user-connected", (userId) => {
-   
-  connectToNewUser(userId);
-});
-
-const connectToNewUser = (userId) => {
-  console.log(`${userId} Entered the room`);
+const connectToNewUser = (userId, stream) => {
+  const call = peer.call(userId, stream);
+  console.log("calling the other peer");
+  const video = document.createElement("video");
+  call.on("stream", (userVideoStream) => {
+    addVideoStream(video, userVideoStream);
+  });
 };
-
-
-
-
 
 const addVideoStream = (video, stream) => {
   video.srcObject = stream;
@@ -52,3 +51,22 @@ const addVideoStream = (video, stream) => {
   });
   videoGrid.append(video);
 };
+
+let input = document.getElementById("chat__message");
+let register_message = document.getElementById("input_message");
+
+register_message.addEventListener("click", (e) => {
+  let val = input.value;
+  console.log(val);
+  socket.emit("message", val);
+  input.value='';
+});
+
+socket.on("createMessage", (message) => {
+  let list = document.createElement("li");
+  list.textContent = message;
+  list.className = "message";
+  let container = document.querySelector(".messages");
+  container.append(list);
+});
+
