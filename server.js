@@ -23,7 +23,7 @@ app.get('/:room',(req,res)=>{
 });
 
 
-server.listen(3030,(req,res)=>{
+server.listen(process.env.port|| 3030,(req,res)=>{
     console.log('connected to port 3030');
 });
 

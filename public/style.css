@@ -96,6 +96,7 @@ h6 {
 
 .main__chat__window {
   flex-grow: 1;
+  overflow:scroll;
 }
 
 .main__message__container {

@@ -6,7 +6,11 @@ myVideo.muted = true;
 
 const videoGrid = document.getElementById("video-grid");
 
-var peer = new Peer();
+var peer = new Peer({
+  path:'/peerjs',
+  host:'/',
+  port:'3030'
+});
 
 peer.on("open", (id) => {
   socket.emit("join-room", ROOM_ID, id);
