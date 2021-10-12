@@ -27,9 +27,12 @@ server.listen(process.env.port|| 3030,(req,res)=>{
     console.log('connected to port 3030');
 });
 
+let userCount=1;
+
 io.on('connection',socket =>{
   socket.on('join-room',(roomId,userId)=>{
    socket.join(roomId);
+   console.log(`User ${userCount++} connected`);
    socket.to(roomId).emit('user-connected',userId);
    
    socket.on('message',message=>{
